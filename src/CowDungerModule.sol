@@ -4,6 +4,10 @@ pragma solidity ^0.8.19;
 import {AutomateReady} from "./gelato/AutomateReady.sol";
 import {ISafe} from "./interfaces/safe/ISafe.sol";
 
+import {IMilkMan} from "./interfaces/milkman/IMilkMan.sol";
+
+import {IERC20} from "./interfaces/vendored/IERC20.sol";
+
 contract CowDungerModule is AutomateReady {
     ////////////////////////////////////////////////////////////////////////////
     // STATE VARIABLES
@@ -13,16 +17,31 @@ contract CowDungerModule is AutomateReady {
     address[] public whitelist;
 
     ////////////////////////////////////////////////////////////////////////////
+    // CONSTANTS
+    ////////////////////////////////////////////////////////////////////////////
+    address internal constant MILK_MAN = 0x11C76AD590ABDFFCD980afEC9ad951B160F02797;
+    address internal constant META_PRICE_CHECKER = 0xf447Bf3CF8582E4DaB9c34C5b261A7b6AD4D6bDD;
+    address internal constant SUSHI_PRICE_CHECKER = 0x5A5633909060c75e5B7cB4952eFad918c711F587;
+
+    address internal constant WETH_MAINNET = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
+    address internal constant WETH_GOERLI = 0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6;
+
+    uint256 internal constant MAINNET_CHAIN_ID = 1;
+    uint256 internal constant GOERLI_CHAIN_ID = 5;
+
+    ////////////////////////////////////////////////////////////////////////////
     // ERRORS
     ////////////////////////////////////////////////////////////////////////////
 
     error NotSigner(address safe, address executor);
+    error ExecutionFailure(address to, bytes data, uint256 timestamp);
 
     ////////////////////////////////////////////////////////////////////////////
     // EVENTS
     ////////////////////////////////////////////////////////////////////////////
 
     event TokenWhitelisted(address token);
+    event CowDungMilked(address tokenSell, uint256 soldAmount, uint256 timestamp);
 
     //////////////////////////////////////////////////////////////////////////
     // MODIFIERS
@@ -41,12 +60,8 @@ contract CowDungerModule is AutomateReady {
         _;
     }
 
-    constructor(
-        ISafe _safe,
-        address _automate,
-        address _taskCreator
-    ) AutomateReady(_automate, _taskCreator) {
-        safe = ISafe(_safe);
+    constructor(address _safe, address _automate, address _taskCreator) AutomateReady(_automate, _taskCreator) {
+        safe = ISafe(payable(_safe));
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -55,9 +70,7 @@ contract CowDungerModule is AutomateReady {
 
     receive() external payable {}
 
-    function addTokensWhitelist(
-        address[] calldata _tokens
-    ) external isSigner(safe) {
+    function addTokensWhitelist(address[] calldata _tokens) external isSigner(safe) {
         for (uint256 i; i < _tokens.length; i++) {
             address token = _tokens[i];
             whitelist.push(token);
@@ -74,14 +87,58 @@ contract CowDungerModule is AutomateReady {
         return false;
     }
 
-    function dung(uint256[] calldata toSell) external onlyDedicatedMsgSender {
-        for (uint256 i; i < toSell.length; i++) {
-            // TODO: milkman.swap(this.whitelist[i], toSell[i], this.safe)
-            // TODO: emit CowDungMilked event
+    function dung(uint256[] calldata _toSell) external onlyDedicatedMsgSender {
+        uint256 chainId = block.chainid;
+        address checker;
+        // NOTE: naive check data to be zero
+        bytes memory priceCheckerData;
+
+        for (uint256 i; i < _toSell.length; i++) {
+            if (_toSell[i] > 0) {
+                address sellToken = whitelist[i];
+                // 1. Approve milkman
+                _checkTransactionAndExecute(safe, sellToken, abi.encodeCall(IERC20.approve, (MILK_MAN, _toSell[i])));
+                // 2. Place swap trade in milkman
+                if (chainId == MAINNET_CHAIN_ID) {
+                    checker = META_PRICE_CHECKER;
+                } else if (chainId == GOERLI_CHAIN_ID) {
+                    checker = SUSHI_PRICE_CHECKER;
+                }
+                _checkTransactionAndExecute(
+                    safe,
+                    MILK_MAN,
+                    abi.encodeCall(
+                        IMilkMan.requestSwapExactTokensForTokens,
+                        (
+                            _toSell[i],
+                            sellToken,
+                            checker == META_PRICE_CHECKER ? WETH_MAINNET : WETH_GOERLI,
+                            address(safe),
+                            checker,
+                            priceCheckerData
+                        )
+                    )
+                );
+                emit CowDungMilked(sellToken, _toSell[i], block.timestamp);
+            }
         }
 
         // Pay the Gelato automator
         (uint256 fee, address feeToken) = _getFeeDetails();
         _transfer(fee, feeToken);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    // INTERNAL
+    ////////////////////////////////////////////////////////////////////////////
+
+    /// @notice Allows executing specific calldata into an address thru a gnosis-safe, which have enable this contract as module.
+    /// @param to Contract address where we will execute the calldata.
+    /// @param data Calldata to be executed within the boundaries of the `allowedFunctions`.
+    function _checkTransactionAndExecute(ISafe _safe, address to, bytes memory data) internal {
+        if (data.length >= 4) {
+            bool success = _safe.execTransactionFromModule(to, 0, data, ISafe.Operation.Call);
+            if (!success) revert ExecutionFailure(to, data, block.timestamp);
+        }
     }
 }
