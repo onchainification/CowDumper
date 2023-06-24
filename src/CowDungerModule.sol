@@ -10,10 +10,7 @@ contract CowDungerModule is AutomateReady {
     ////////////////////////////////////////////////////////////////////////////
 
     ISafe public immutable safe;
-
-    address[] public restrictionList;
-
-    bool public isWhitelist;
+    address[] public whitelist;
 
     ////////////////////////////////////////////////////////////////////////////
     // ERRORS
@@ -25,8 +22,7 @@ contract CowDungerModule is AutomateReady {
     // EVENTS
     ////////////////////////////////////////////////////////////////////////////
 
-    event RestrictionTypeChanged(bool newRestrictionType);
-    event TokenRestricted(address token);
+    event TokenWhitelisted(address token);
 
     //////////////////////////////////////////////////////////////////////////
     // MODIFIERS
@@ -47,12 +43,10 @@ contract CowDungerModule is AutomateReady {
 
     constructor(
         ISafe _safe,
-        bool _isWhiteList,
         address _automate,
         address _taskCreator
     ) AutomateReady(_automate, _taskCreator) {
         safe = ISafe(_safe);
-        isWhitelist = _isWhiteList;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -61,40 +55,35 @@ contract CowDungerModule is AutomateReady {
 
     receive() external payable {}
 
-    function changeRestrictionType(bool _isWhiteList) external isSigner(safe) {
-        isWhitelist = _isWhiteList;
-        emit RestrictionTypeChanged(_isWhiteList);
-    }
-
-    function addTokenRestrictions(
+    function addTokensWhitelist(
         address[] calldata _tokens
     ) external isSigner(safe) {
         for (uint256 i; i < _tokens.length; i++) {
             address token = _tokens[i];
-            restrictionList.push(token);
-            emit TokenRestricted(token);
+            whitelist.push(token);
+            emit TokenWhitelisted(token);
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-    // INTERNAL
-    ////////////////////////////////////////////////////////////////////////////
-
-    function _isRestricted(address _token) internal view returns (bool) {
-        if (isWhitelist) {
-            for (uint256 i; i < restrictionList.length; i++) {
-                if (restrictionList[i] == _token) {
-                    return true;
-                }
+    function _isWhitelisted(address _token) external view returns (bool) {
+        for (uint256 i; i < whitelist.length; i++) {
+            if (whitelist[i] == _token) {
+                return true;
             }
-            return false;
-        } else {
-            for (uint256 i; i < restrictionList.length; i++) {
-                if (restrictionList[i] == _token) {
-                    return false;
-                }
-            }
-            return true;
         }
+        return false;
+    }
+
+    function dung(uint256[] calldata toSell) external onlyDedicatedMsgSender {
+        for (uint256 i; i < toSell.length; i++) {
+            // TODO: milkman.swap(this.whitelist[i], toSell[i], this.safe)
+            // TODO: emit CowDungMilked event
+        }
+        // TODO: set a cooldown so that resolver will not trigger while
+        // orders are open
+
+        // Pay the Gelato automator
+        (uint256 fee, address feeToken) = _getFeeDetails();
+        _transfer(fee, feeToken);
     }
 }
