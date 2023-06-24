@@ -9,7 +9,7 @@
 - `0xc1C6805B857Bef1f412519C4A842522431aFed39` GelatoAutomate
 - `0xF381dfd7a139caaB83c26140e5595C0b85DDadCd` GelatoTaskTreasury
 - `0x6bB26133d0A2351EcfAe72Bf0A991aa5A56096C0` CowDungerModule
-- CowDungerResolver
+- `0xfe3b9CFC3f93A02aA99a7Df37193A18457C647A0` CowDungerResolver
 
 ### Gnosis
 - `0xa4A4a4879dCD3289312884e9eC74Ed37f9a92a55` SafeMultisig
