@@ -68,6 +68,10 @@ contract CowDungerModule is AutomateReady {
     // PUBLIC
     ////////////////////////////////////////////////////////////////////////////
 
+    function whitelistLength() public view returns (uint256) {
+        return whitelist.length;
+    }
+
     receive() external payable {}
 
     function addTokensWhitelist(address[] calldata _tokens) external isSigner(safe) {

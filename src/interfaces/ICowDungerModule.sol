@@ -8,5 +8,7 @@ interface ICowDungerModule {
 
     function dung(uint256[] calldata toSell) external;
 
-    function whitelist() external view returns (address[] memory);
+    function whitelistLength() external view returns (uint256);
+
+    function whitelist(uint256 index) external view returns (address);
 }
