@@ -11,6 +11,7 @@ contract ModuleCheckerTest is Test {
     address signer;
     address automator;
     address taskCreator;
+    address usdc;
     CowDungerModule module;
     CowDungerResolver resolver;
 
@@ -21,19 +22,29 @@ contract ModuleCheckerTest is Test {
         automator = 0xc1C6805B857Bef1f412519C4A842522431aFed39;
         taskCreator = 0xF381dfd7a139caaB83c26140e5595C0b85DDadCd;
 
+        usdc = 0x07865c6E87B9F70255377e024ace6630C1Eaa37F;
+
         vm.startPrank(signer);
 
         module = new CowDungerModule(address(safe), automator, taskCreator);
         resolver = new CowDungerResolver();
 
         address[] memory tokens = new address[](1);
-        tokens[0] = address(0x07865c6E87B9F70255377e024ace6630C1Eaa37F);
+        tokens[0] = usdc;
         module.addTokensWhitelist(tokens);
 
         vm.stopPrank();
     }
 
     function test_checker() public {
-        resolver.checker(address(module));
+        {
+            (bool canExec, bytes memory __) = resolver.checker(address(module));
+            assertEq(canExec, false);
+        }
+
+        deal(usdc, address(safe), 1e18);
+
+        (bool canExec, bytes memory __) = resolver.checker(address(module));
+        assertEq(canExec, true);
     }
 }
