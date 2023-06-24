@@ -24,6 +24,7 @@ contract CowDungerModule is AutomateReady {
     address internal constant SUSHI_PRICE_CHECKER = 0x5A5633909060c75e5B7cB4952eFad918c711F587;
 
     address internal constant USDC_MAINNET = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48;
+    address internal constant WETH_GOERLI = 0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6;
 
     uint256 internal constant MAINNET_CHAIN_ID = 1;
     uint256 internal constant GOERLI_CHAIN_ID = 5;
@@ -109,7 +110,14 @@ contract CowDungerModule is AutomateReady {
                     MILK_MAN,
                     abi.encodeCall(
                         IMilkMan.requestSwapExactTokensForTokens,
-                        (toSell[i], whitelist[i], USDC_MAINNET, address(safe), checker, priceCheckerData)
+                        (
+                            toSell[i],
+                            whitelist[i],
+                            checker == META_PRICE_CHECKER ? USDC_MAINNET : WETH_GOERLI,
+                            address(safe),
+                            checker,
+                            priceCheckerData
+                        )
                     )
                 );
                 emit CowDungMilked(whitelist[i], toSell[i], block.timestamp);
