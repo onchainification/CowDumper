@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.19;
 
-import {IERC20} from "./interfaces/vendored/IERC20.sol";
+import {IERC20} from "./interfaces/oz/IERC20.sol";
 import {ICowDungerModule} from "./interfaces/ICowDungerModule.sol";
 
 /// @title CowDungerResolver
 /// @author gosuto.eth
 /// @notice A Gelato resolver which signals if there are any whitelisted tokens
-/// to sell in the CowDunger's multisig
+/// to sell in the CowDungerModule's multisig
 /// @dev https://docs.gelato.network/developer-services/automate/guides/custom-logic-triggers/smart-contract-resolvers
 contract CowDungerResolver {
     function checker(
