@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.19;
 
+import {AutomateReady} from "./gelato/AutomateReady.sol";
 import {ISafe} from "./interfaces/safe/ISafe.sol";
 
-contract CowDungerModule {
+contract CowDungerModule is AutomateReady {
     ////////////////////////////////////////////////////////////////////////////
     // STATE VARIABLES
     ////////////////////////////////////////////////////////////////////////////
@@ -44,7 +45,12 @@ contract CowDungerModule {
         _;
     }
 
-    constructor(ISafe _safe, bool _isWhiteList) {
+    constructor(
+        ISafe _safe,
+        bool _isWhiteList,
+        address _automate,
+        address _taskCreator
+    ) AutomateReady(_automate, _taskCreator) {
         safe = ISafe(_safe);
         isWhitelist = _isWhiteList;
     }
@@ -53,12 +59,16 @@ contract CowDungerModule {
     // PUBLIC
     ////////////////////////////////////////////////////////////////////////////
 
+    receive() external payable {}
+
     function changeRestrictionType(bool _isWhiteList) external isSigner(safe) {
         isWhitelist = _isWhiteList;
         emit RestrictionTypeChanged(_isWhiteList);
     }
 
-    function addTokenRestrictions(address[] calldata _tokens) external isSigner(safe) {
+    function addTokenRestrictions(
+        address[] calldata _tokens
+    ) external isSigner(safe) {
         for (uint256 i; i < _tokens.length; i++) {
             address token = _tokens[i];
             restrictionList.push(token);
