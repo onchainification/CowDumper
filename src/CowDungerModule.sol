@@ -79,8 +79,6 @@ contract CowDungerModule is AutomateReady {
             // TODO: milkman.swap(this.whitelist[i], toSell[i], this.safe)
             // TODO: emit CowDungMilked event
         }
-        // TODO: set a cooldown so that resolver will not trigger while
-        // orders are open
 
         // Pay the Gelato automator
         (uint256 fee, address feeToken) = _getFeeDetails();
