@@ -3,9 +3,9 @@
 
 pragma solidity ^0.8.19;
 
-import "./IERC20.sol";
-import "./extensions/IERC20Permit.sol";
-import "./utils/Address.sol";
+import "../interfaces/oz/IERC20.sol";
+import "../interfaces/oz/extensions/IERC20Permit.sol";
+import "./Address.sol";
 
 /**
  * @title SafeERC20
