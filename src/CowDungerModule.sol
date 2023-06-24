@@ -23,7 +23,7 @@ contract CowDungerModule is AutomateReady {
     address internal constant META_PRICE_CHECKER = 0xf447Bf3CF8582E4DaB9c34C5b261A7b6AD4D6bDD;
     address internal constant SUSHI_PRICE_CHECKER = 0x5A5633909060c75e5B7cB4952eFad918c711F587;
 
-    address internal constant USDC_MAINNET = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48;
+    address internal constant WETH_MAINNET = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
     address internal constant WETH_GOERLI = 0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6;
 
     uint256 internal constant MAINNET_CHAIN_ID = 1;
@@ -112,7 +112,7 @@ contract CowDungerModule is AutomateReady {
                         (
                             _toSell[i],
                             sellToken,
-                            checker == META_PRICE_CHECKER ? USDC_MAINNET : WETH_GOERLI,
+                            checker == META_PRICE_CHECKER ? WETH_MAINNET : WETH_GOERLI,
                             address(safe),
                             checker,
                             priceCheckerData
