@@ -6,6 +6,8 @@ pragma solidity ^0.8.17;
 /// @dev This interface collects the functions of the CoW Swap settlement contract that are used by the ETH flow
 /// contract.
 interface ICoWSwapSettlement {
+    function domainSeparator() external view returns (bytes32);
+
     /// @dev Map each user order by UID to the amount that has been filled so
     /// far. If this amount is larger than or equal to the amount traded in the
     /// order (amount sold for sell orders, amount bought for buy orders) then
