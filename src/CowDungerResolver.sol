@@ -2,7 +2,7 @@
 pragma solidity ^0.8.20;
 
 import {IERC20} from "./interfaces/vendored/IERC20.sol";
-import {ICowDunger} from "./interfaces/ICowDunger.sol";
+import {ICowDungerModule} from "./interfaces/ICowDungerModule.sol";
 
 /// @title CowDungerResolver
 /// @author gosuto.eth
@@ -13,8 +13,9 @@ contract CowDungerResolver {
     function checker(
         address cowDungerModule
     ) external view returns (bool canExec, bytes memory execPayload) {
-        address safe = ICowDunger(cowDungerModule).safe();
-        address[] memory whitelist = ICowDunger(cowDungerModule).getWhitelist();
+        address safe = ICowDungerModule(cowDungerModule).safe();
+        address[] memory whitelist = ICowDungerModule(cowDungerModule)
+            .getWhitelist();
         uint256[] memory toSell = new uint256[](whitelist.length);
         for (uint256 idx = 0; idx < whitelist.length; idx++) {
             uint256 balance = IERC20(whitelist[idx]).balanceOf(safe);
