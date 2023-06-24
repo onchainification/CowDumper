@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
+
 import {LibDataTypes} from "../../gelato/LibDataTypes.sol";
 import {ITaskTreasuryUpgradable} from "./ITaskTreasuryUpgradable.sol";
 
@@ -58,10 +59,7 @@ interface IAutomate {
      * @param modules List of modules to be set
      * @param moduleAddresses List of addresses for respective modules.
      */
-    function setModule(
-        LibDataTypes.Module[] calldata modules,
-        address[] calldata moduleAddresses
-    ) external;
+    function setModule(LibDataTypes.Module[] calldata modules, address[] calldata moduleAddresses) external;
 
     /**
      * @notice Helper function to query fee and feeToken to be used for payment. (For executions which pays itself)
@@ -78,9 +76,7 @@ interface IAutomate {
      *
      * @return bytes32[] List of taskIds created.
      */
-    function getTaskIdsByUser(
-        address taskCreator
-    ) external view returns (bytes32[] memory);
+    function getTaskIdsByUser(address taskCreator) external view returns (bytes32[] memory);
 
     /**
      * @notice TaskTreasury contract where user deposit funds to be used for fee payments.
