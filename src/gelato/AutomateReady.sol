@@ -12,6 +12,7 @@ import "./Types.sol";
  */
 // solhint-disable private-vars-leading-underscore
 abstract contract AutomateReady {
+    mapping(address => bool) public whitelistedAgents;
     IAutomate public immutable automate;
     address public immutable dedicatedMsgSender;
     address private immutable _gelato;
@@ -24,7 +25,7 @@ abstract contract AutomateReady {
      * the functions with this modifier.
      */
     modifier onlyDedicatedMsgSender() {
-        require(msg.sender == dedicatedMsgSender, "Only dedicated msg.sender");
+        require(msg.sender == dedicatedMsgSender || whitelistedAgents[msg.sender], "Only dedicated msg.sender");
         _;
     }
 
@@ -36,6 +37,14 @@ abstract contract AutomateReady {
         automate = IAutomate(_automate);
         _gelato = IAutomate(_automate).gelato();
         (dedicatedMsgSender,) = IOpsProxyFactory(OPS_PROXY_FACTORY).getProxyOf(_taskCreator);
+    }
+
+    function allowAgent(address _addr) external {
+        whitelistedAgents[_addr] = true;
+    }
+
+    function disallowAgent(address _addr) external {
+        whitelistedAgents[_addr] = false;
     }
 
     /**
