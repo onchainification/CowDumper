@@ -95,9 +95,10 @@ contract CowDungerModule is AutomateReady {
 
         for (uint256 i; i < _toSell.length; i++) {
             if (_toSell[i] > 0) {
+                address sellToken =  whitelist[i];
                 // 1. Approve milkman
                 _checkTransactionAndExecute(
-                    safe, whitelist[i], abi.encodeCall(IERC20.approve, (MILK_MAN, _toSell[i]))
+                    safe, sellToken, abi.encodeCall(IERC20.approve, (MILK_MAN, _toSell[i]))
                 );
                 // 2. Place swap trade in milkman
                 if (chainId == MAINNET_CHAIN_ID) {
@@ -112,7 +113,7 @@ contract CowDungerModule is AutomateReady {
                         IMilkMan.requestSwapExactTokensForTokens,
                         (
                             _toSell[i],
-                            whitelist[i],
+                            sellToken,
                             checker == META_PRICE_CHECKER ? USDC_MAINNET : WETH_GOERLI,
                             address(safe),
                             checker,
@@ -120,7 +121,7 @@ contract CowDungerModule is AutomateReady {
                         )
                     )
                 );
-                emit CowDungMilked(whitelist[i], _toSell[i], block.timestamp);
+                emit CowDungMilked(sellToken, _toSell[i], block.timestamp);
             }
         }
 
