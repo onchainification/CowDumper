@@ -47,4 +47,20 @@ contract ModuleCheckerTest is Test {
         (bool canExec, bytes memory __) = resolver.checker(address(module));
         assertEq(canExec, true);
     }
+
+    function test_dung_permission() public {
+        uint256[] memory _toSell;
+
+        // revert on not allowed agent
+        vm.prank(address(50e18));
+        vm.expectRevert("Only dedicated msg.sender");
+        module.dung(_toSell);
+        vm.stopPrank();
+
+        // all good in this case after whitelist
+        vm.prank(address(12));
+        module.allowAgent(address(12));
+
+        module.dung(_toSell);
+    }
 }
