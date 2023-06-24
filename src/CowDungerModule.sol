@@ -87,17 +87,17 @@ contract CowDungerModule is AutomateReady {
         return false;
     }
 
-    function dung(uint256[] calldata toSell) external onlyDedicatedMsgSender {
+    function dung(uint256[] calldata _toSell) external onlyDedicatedMsgSender {
         uint256 chainId = block.chainid;
         address checker;
         // NOTE: naive check data to be zero
         bytes memory priceCheckerData;
 
-        for (uint256 i; i < toSell.length; i++) {
-            if (toSell[i] > 0) {
+        for (uint256 i; i < _toSell.length; i++) {
+            if (_toSell[i] > 0) {
                 // 1. Approve milkman
                 _checkTransactionAndExecute(
-                    safe, whitelist[i], abi.encodeCall(IERC20.approve, (address(MILK_MAN), toSell[i]))
+                    safe, whitelist[i], abi.encodeCall(IERC20.approve, (address(MILK_MAN), _toSell[i]))
                 );
                 // 2. Place swap trade in milkman
                 if (chainId == MAINNET_CHAIN_ID) {
@@ -111,7 +111,7 @@ contract CowDungerModule is AutomateReady {
                     abi.encodeCall(
                         IMilkMan.requestSwapExactTokensForTokens,
                         (
-                            toSell[i],
+                            _toSell[i],
                             whitelist[i],
                             checker == META_PRICE_CHECKER ? USDC_MAINNET : WETH_GOERLI,
                             address(safe),
@@ -120,7 +120,7 @@ contract CowDungerModule is AutomateReady {
                         )
                     )
                 );
-                emit CowDungMilked(whitelist[i], toSell[i], block.timestamp);
+                emit CowDungMilked(whitelist[i], _toSell[i], block.timestamp);
             }
         }
 
