@@ -16,7 +16,7 @@ contract ModuleCheckerTest is Test {
     CowDungerResolver resolver;
 
     function setUp() public {
-        vm.createSelectFork("testnet");
+        vm.createSelectFork("testnet", 9234428);
         safe = ISafe(payable(address(0x206C89813cbDE8E14582Ff94F3F1A1728C39a300)));
         signer = 0xA0c60A3Bf0934869f03955f3431E044059B03E62;
         automator = 0xc1C6805B857Bef1f412519C4A842522431aFed39;
@@ -37,14 +37,28 @@ contract ModuleCheckerTest is Test {
     }
 
     function test_checker() public {
-        {
-            (bool canExec, bytes memory __) = resolver.checker(address(module));
-            assertEq(canExec, false);
-        }
+        (bool canExec, bytes memory __) = resolver.checker(address(module));
+        assertEq(canExec, false);
 
         deal(usdc, address(safe), 1e18);
 
-        (bool canExec, bytes memory __) = resolver.checker(address(module));
+        (canExec, __) = resolver.checker(address(module));
         assertEq(canExec, true);
+    }
+
+    function test_dung_permission() public {
+        uint256[] memory _toSell;
+
+        // revert on not allowed agent
+        vm.prank(address(50e18));
+        vm.expectRevert("Only dedicated msg.sender");
+        module.dung(_toSell);
+
+        // all good in this case after whitelist
+        vm.prank(address(12));
+        assertEq(module.whitelistedAgents(address(12)), false);
+        module.allowAgent(address(12));
+
+        assertEq(module.whitelistedAgents(address(12)), true);
     }
 }
