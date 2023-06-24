@@ -56,8 +56,9 @@ contract ModuleCheckerTest is Test {
 
         // all good in this case after whitelist
         vm.prank(address(12));
+        assertEq(module.whitelistedAgents(address(12)), false);
         module.allowAgent(address(12));
 
-        module.dung(_toSell);
+        assertEq(module.whitelistedAgents(address(12)), true);
     }
 }
