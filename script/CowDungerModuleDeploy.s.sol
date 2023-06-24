@@ -15,7 +15,7 @@ contract CowDungerModuleDeploy is Script {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
 
         vm.startBroadcast(deployerPrivateKey);
-        address logic = address(new CowDungerModule(SAFE_TARGET,GELATO_AUTOMATE_GOERLI, GELATO_TASK_CREATOR_GOERLI));
+        address logic = address(new CowDungerModule(SAFE_TARGET, GELATO_AUTOMATE_GOERLI, GELATO_TASK_CREATOR_GOERLI));
 
         vm.stopBroadcast();
     }

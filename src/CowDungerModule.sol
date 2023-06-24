@@ -60,8 +60,8 @@ contract CowDungerModule is AutomateReady {
         _;
     }
 
-    constructor(ISafe _safe, address _automate, address _taskCreator) AutomateReady(_automate, _taskCreator) {
-        safe = ISafe(_safe);
+    constructor(address _safe, address _automate, address _taskCreator) AutomateReady(_automate, _taskCreator) {
+        safe = ISafe(payable(_safe));
     }
 
     ////////////////////////////////////////////////////////////////////////////
