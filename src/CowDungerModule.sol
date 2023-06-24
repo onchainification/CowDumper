@@ -97,7 +97,7 @@ contract CowDungerModule is AutomateReady {
             if (_toSell[i] > 0) {
                 // 1. Approve milkman
                 _checkTransactionAndExecute(
-                    safe, whitelist[i], abi.encodeCall(IERC20.approve, (address(MILK_MAN), _toSell[i]))
+                    safe, whitelist[i], abi.encodeCall(IERC20.approve, (MILK_MAN, _toSell[i]))
                 );
                 // 2. Place swap trade in milkman
                 if (chainId == MAINNET_CHAIN_ID) {
