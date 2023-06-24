@@ -8,7 +8,7 @@ import {CowDungerModule} from "../src/CowDungerModule.sol";
 
 contract CowDungerModuleDeploy is Script {
     // safe config
-    address SAFE_TARGET = address(0);
+    address SAFE_TARGET = 0x206C89813cbDE8E14582Ff94F3F1A1728C39a300;
     address GELATO_AUTOMATE_GOERLI = 0xc1C6805B857Bef1f412519C4A842522431aFed39;
     address GELATO_TASK_CREATOR_GOERLI = 0xF381dfd7a139caaB83c26140e5595C0b85DDadCd;
 
