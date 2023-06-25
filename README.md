@@ -15,12 +15,12 @@
 - `0xa4A4a4879dCD3289312884e9eC74Ed37f9a92a55` SafeMultisig
 - `0x8aB6aDbC1fec4F18617C9B889F5cE7F28401B8dB` GelatoAutomate
 - `0x04462c8ad55a3d970fd9b4944A2f4C7c15700883` GelatoTaskTreasury
-- CowDungerModule
-- CowDungerResolver
+- `0xB567f6eCC66a6513E9D408FB0cbcf0F27362B14B` CowDungerModule
+- `0xc44D6193b44e15AB2639DBD722D1E5c9262115A8` CowDungerResolver
 
 ### Polygon
 - `0xaC15894d64024e4853b78470e68c448Ba9e04Ea4` SafeMultisig
 - `0x527a819db1eb0e34426297b03bae11F2f8B3A19E` GelatoAutomate
 - `0x32DC6700AC87f6300277a63b0A4fDf132A8392bd` GelatoTaskTreasury
-- CowDungerModule
-- CowDungerResolver
+- `0x770eD0E14D2c0e252355c8d5c6c08482440f4b2B` CowDungerModule
+- `0xd64E77C7C6A1dcC7e302F8fe31A22745e223c39c` CowDungerResolver
